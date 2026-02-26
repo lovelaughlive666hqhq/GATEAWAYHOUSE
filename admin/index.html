@@ -1,118 +1,132 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="robots" content="noindex, nofollow" />
-  <title>Admin | Issue Certificate</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin | Issue Certificate</title>
 
-  <!-- Bootstrap 3 (responsive like your original layout) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
 
-  <style>
-    html, body { background:#fff; font-family: Roboto, Arial, sans-serif; }
-    #logo{ display:block; margin:30px auto 15px; max-width:230px; width:100%; height:auto; }
-    .login-logo{ text-align:center; font-size:30px; font-weight:300; margin-bottom:15px; }
-    .box{ background:#fff; padding:18px 15px; border:1px dashed #bbb; margin-bottom:20px; }
-    .btn-black{ background:#000; color:#fff; border:0; }
-    .btn-black:hover{ background:#111; color:#fff; }
-    #qrcode{ display:flex; justify-content:center; margin-top:15px; }
-    .small{ font-size:12px; color:#666; word-break:break-all; text-align:center; }
-    @media (max-width: 767px){
-      .container{ padding-left:12px; padding-right:12px; }
-    }
-  </style>
+<style>
+html,body{background:#fff;font-family:Roboto,Arial,sans-serif}
+.login-logo{text-align:center;font-size:30px;font-weight:300;margin:40px 0 20px}
+.panel{border:1px dashed #bbb}
+.btn-black{background:#000;color:#fff;border:0}
+.btn-black:hover{background:#111}
+#qrcode{display:flex;justify-content:center;margin-top:15px}
+.small{font-size:12px;color:#666;word-break:break-all;text-align:center;margin-top:10px}
+</style>
 
-  <!-- QRCode.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
-
 <body>
-  <div class="container">
 
-    <div class="col-sm-6 col-sm-offset-3" style="margin-top: 10px;">
-      <!-- use your local repo logo in root -->
-      <img src="../logo.png" id="logo" alt="Logo" onerror="this.style.display='none'">
+<div class="container">
+<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
 
-      <div class="login-logo">Admin <b>Issuer</b></div>
-    </div>
+<div class="login-logo">Admin <b>Issuer</b></div>
 
-    <div class="col-sm-6 col-sm-offset-3">
-      <div class="box">
-        <div class="form-group">
-          <label>Recipient</label>
-          <input class="form-control" id="name" placeholder="Full name">
-        </div>
+<div class="panel panel-default panel-body">
 
-        <div class="form-group">
-          <label>Qualification Achieved</label>
-          <input class="form-control" id="qualification" placeholder="Qualification / Course">
-        </div>
+<div class="form-group">
+<label>Certificate ID (required)</label>
+<input class="form-control" id="certId" placeholder="GA-2026-000123">
+</div>
 
-        <div class="form-group">
-          <label>Award Date</label>
-          <input class="form-control" id="awardedDate" type="date">
-        </div>
+<div class="form-group">
+<label>Recipient</label>
+<input class="form-control" id="name">
+</div>
 
-        <button class="btn btn-black btn-block" id="issueBtn" onclick="issue()">Issue + Generate QR</button>
+<div class="form-group">
+<label>Qualification</label>
+<input class="form-control" id="qualification">
+</div>
 
-        <hr>
+<div class="form-group">
+<label>Award Date</label>
+<input class="form-control" id="awardedDate" type="date">
+</div>
 
-        <div id="status" style="text-align:center; font-weight:700;"></div>
-        <div id="qrcode"></div>
-        <div class="small" id="verifyLink"></div>
-      </div>
-    </div>
-  </div>
+<button class="btn btn-black btn-block" id="issueBtn" onclick="issue()">Issue + Generate QR</button>
+
+<hr>
+
+<div id="status" style="text-align:center;font-weight:700"></div>
+<div id="qrcode"></div>
+<div class="small" id="verifyLink"></div>
+
+</div>
+</div>
+</div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
-  const VERIFY_BASE_URL = "https://lovelaughlive666hqhq.github.io/GATEAWAYHOUSE/verify";
 
-  async function issue(){
-    const name = document.getElementById("name").value.trim();
-    const qualification = document.getElementById("qualification").value.trim();
-    const awardedDate = document.getElementById("awardedDate").value;
+const API_URL = "https://script.google.com/macros/s/AKfycbyXdlN9IkvKP9ND1P8CF7YhsbAZxOnxXmVuXJH_4FQBDIQ56opButLXm8FaiU7BscX1-g/exec";
+const VERIFY_BASE = "https://lovelaughlive666hqhq.github.io/GATEAWAYHOUSE/verify";
 
-    if(!name || !qualification || !awardedDate){
-      alert("Fill Recipient, Qualification, and Award Date.");
-      return;
-    }
+async function issue(){
 
-    document.getElementById("issueBtn").disabled = true;
-    document.getElementById("status").textContent = "Issuing…";
-    document.getElementById("qrcode").innerHTML = "";
-    document.getElementById("verifyLink").textContent = "";
+const certId = document.getElementById("certId").value.trim();
+const name   = document.getElementById("name").value.trim();
+const qual   = document.getElementById("qualification").value.trim();
+const date   = document.getElementById("awardedDate").value;
 
-    // IMPORTANT: keep it a “simple request” to avoid CORS preflight with Apps Script
-    // (don’t set Content-Type: application/json) :contentReference[oaicite:1]{index=1}
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ name, qualification, awardedDate })
-    });
+if(!certId || !name || !qual || !date){
+alert("All fields are required.");
+return;
+}
 
-    const data = await res.json().catch(() => ({}));
+document.getElementById("issueBtn").disabled = true;
+document.getElementById("status").textContent = "Issuing...";
+document.getElementById("qrcode").innerHTML = "";
+document.getElementById("verifyLink").textContent = "";
 
-    document.getElementById("issueBtn").disabled = false;
+try{
 
-    if(!data.success || !data.id){
-      document.getElementById("status").textContent = "Failed to issue.";
-      return;
-    }
+const res = await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"   // IMPORTANT for Apps Script
+},
+body: JSON.stringify({
+certificate_id: certId,
+recipient: name,
+qualification: qual,
+award_date: date
+})
+});
 
-    const url = `${VERIFY_BASE_URL}?id=${encodeURIComponent(data.id)}`;
-    document.getElementById("status").textContent = `Issued: ${data.id}`;
+const data = await res.json();
 
-    new QRCode(document.getElementById("qrcode"), {
-      text: url,
-      width: 220,
-      height: 220
-    });
+if(data.status !== "ok"){
+document.getElementById("status").textContent = data.message || "Failed";
+document.getElementById("issueBtn").disabled = false;
+return;
+}
 
-    document.getElementById("verifyLink").textContent = url;
-  }
+const verifyURL = VERIFY_BASE + "?id=" + encodeURIComponent(certId);
+
+document.getElementById("status").textContent = "Issued: " + certId;
+
+new QRCode(document.getElementById("qrcode"),{
+text: verifyURL,
+width:220,
+height:220
+});
+
+document.getElementById("verifyLink").textContent = verifyURL;
+
+}catch(e){
+document.getElementById("status").textContent = "Network or server error";
+}
+
+document.getElementById("issueBtn").disabled = false;
+}
+
 </script>
+
 </body>
 </html>
