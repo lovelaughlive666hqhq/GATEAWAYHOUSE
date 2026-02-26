@@ -1,147 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="robots" content="noindex, nofollow" />
-	<title>Gatehouse.Ark | Log in</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="noindex, nofollow" />
+  <title>QR Certificate Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<!-- Keep viewport normal; we “lock” by scaling stage -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
 
-	<link href="https://ark-gatehouseawards.org/css/app.css" rel="stylesheet">
-	<link href="https://ark-gatehouseawards.org/css/parsley.css" rel="stylesheet">
-	<link href="https://ark-gatehouseawards.org/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-	<link href="https://ark-gatehouseawards.org/css/AdminLTE.min.css" rel="stylesheet">
-	<link href="https://ark-gatehouseawards.org/plugins/iCheck/square/blue.css" rel="stylesheet">
-
-	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
-	<link href='https://fonts.googleapis.com/css?family=Lato:400,700,900,100,300' rel='stylesheet' type='text/css'>
-	<link href='https://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css'>
-
-	<style>
-		/* ===== Locking layer (added) ===== */
-		:root { --LOCK_W: 640; } /* base design width */
-		html, body { background:#fff; }
-		.login-page, .register-page { background:#fff; }
-
-		.lock-wrap{
-			display:flex;
-			justify-content:center;
-			align-items:flex-start;
-		}
-		.lock-stage{
-			width: calc(var(--LOCK_W) * 1px);
-			transform-origin: top center;
-			/* transform set by JS */
-		}
-
-		/* keep your original styles */
-		#logo {
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
-			max-width: 230px;
-			margin-bottom: 20px;
-		}
-		.login-logo { margin-bottom: 15px; font-size: 30px; }
-		.alert { padding: 25px 0px; }
-		.h6, h6 { font-size: 14px; font-weight: 300; }
-	</style>
+  <style>
+    html, body { background:#fff; font-family: Roboto, Arial, sans-serif; }
+    #logo{ display:block; margin:40px auto 20px; max-width:230px; width:100%; height:auto; }
+    #headerImg{ display:block; margin:0 auto 15px; max-width:420px; width:100%; height:auto; }
+    .login-logo{ text-align:center; font-size:30px; font-weight:300; margin-bottom:15px; }
+    .login-box-body{ background:#fff; padding:18px 15px; }
+    h6{ font-size:14px; font-weight:300; }
+    .small{ font-size:12px; color:#666; word-break:break-all; text-align:center; margin-top:10px; }
+    @media (max-width: 767px){
+      .container{ padding-left:12px; padding-right:12px; }
+      .alert{ margin:10px 0 0 !important; }
+    }
+  </style>
 </head>
 
 <body class="hold-transition login-page">
+  <div class="container">
 
-	<!-- ===== Added wrapper to lock scaling ===== -->
-	<div class="lock-wrap">
-		<div class="lock-stage" id="lockStage">
+    <div class='alert alert-danger' role='alert' style='text-transform: uppercase; text-align: center; margin: 10px 25px 0;'>
+      This version of the ark is no longer active.
+      Please visit <a href='https://ark.gatehouseawards.org/admin/login'>The new Ark here</a>
+    </div>
 
-			<div class="container">
+    <div class="col-sm-6 col-sm-offset-3" style="margin-top: 40px;">
+      <img src="../logo.png" id="logo" alt="GA_LOGO" onerror="this.style.display='none'">
+      <img src="../QR%20Certificate%20Verification%20image.png" id="headerImg" alt="QR Certificate Verification" onerror="this.style.display='none'">
 
-				<div class='alert alert-danger' role='alert' style='text-transform: uppercase; text-align: center; margin: 10px 25px 0;'>
-					This version of the ark is no longer active.
-					Please visit <a href='https://ark.gatehouseawards.org/admin/login'>The new Ark here</a>
-				</div>
+      <div class="login-logo">
+        QR Certificate <b>Verification</b>
+      </div>
+    </div>
 
-				<div class="col-sm-6 col-sm-offset-3" style="margin-top: 40px;">
+    <div class="col-sm-6 col-sm-offset-3" style="margin-top: 10px;">
+      <div id="greenBox" class="login-box-body"
+           style="margin-bottom: 20px; text-align: center; border-color: rgb(0, 166, 90); border-width: 1px; border-style: dashed;">
 
-					<!-- Option A: keep original remote logo EXACTLY like your code -->
-					<img src="http://ark-gatehouseawards.org/images/Logo.png" id="logo" alt="GA_LOGO">
+        <h4 id="title" style="margin-top:0;margin-bottom:15px;color:rgb(0,166,90);">Checking…</h4>
 
-					<!-- Option B: if you want to use your GitHub Pages local file, swap line above to:
-					<img src="../logo.png" id="logo" alt="GA_LOGO">
-					-->
+        <div id="found" style="display:none;">
+          <h6><strong>Recipient:</strong> <span id="v_name"></span></h6>
+          <h6><strong>Qualification Achieved:</strong></h6>
+          <h6 id="v_qualification"></h6>
+          <h6 style="margin-bottom:3px;"><strong>Award Date:</strong> <span id="v_date"></span></h6>
+        </div>
 
-					<div class="login-logo">
-						QR Certificate <b>Verification</b>
-					</div>
-				</div>
+        <div id="notfound" style="display:none;">
+          <h6>Certificate not found for this link.</h6>
+        </div>
 
-				<div class="col-sm-6 col-sm-offset-3" style="margin-top: 10px;">
-					<div style="margin-bottom: 20px; text-align: center; border-color: rgb(0, 166, 90); border-width: 1px; border-style: dashed;" class="login-box-body">
+        <div class="small" id="certIdLine"></div>
+      </div>
+    </div>
 
-						<h4 style="margin-top: 0px;margin-bottom: 15px;color: rgb(0, 166, 90);">Certificate Found</h4>
-						<h6><strong>Recipient:</strong> Daljeet Singh </h6>
+    <div class="col-sm-6 col-sm-offset-3" style="margin-top: 0px;">
+      <div class="login-box-body"
+           style="margin-bottom: 20px; text-align: center; border-color: rgb(231, 51, 51); border-width: 1px; border-style: dashed;">
+        <h6 style="margin-top: 0px;">
+          If the details show here don't match with the certificate in front of you please contact us immediately on
+        </h6>
+        <h6 style="margin-bottom: 3px;">
+          <strong>+44 (0)1924 609250</strong> or <strong>info@gatehouseawards.org</strong>
+        </h6>
+      </div>
+    </div>
+  </div>
 
-						<h6><strong>Qualification Achieved:</strong></h6>
-						<h6>GA Level 4 Diploma in Business Management</h6>
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
+  const id = new URLSearchParams(location.search).get("id");
 
-						<h6 style="margin-bottom: 3px;"> <strong> Award Date: </strong> 10/10/2025</h6>
+  const title = document.getElementById("title");
+  const found = document.getElementById("found");
+  const notfound = document.getElementById("notfound");
+  const certIdLine = document.getElementById("certIdLine");
+  const greenBox = document.getElementById("greenBox");
 
-					</div>
-				</div>
+  function setNotFound(msg){
+    title.textContent = msg;
+    title.style.color = "rgb(231,51,51)";
+    greenBox.style.borderColor = "rgb(231,51,51)";
+    found.style.display = "none";
+    notfound.style.display = "block";
+  }
 
-				<div class="col-sm-6 col-sm-offset-3" style="margin-top: 0px;">
-					<div style="margin-bottom: 20px; text-align: center; border-color: rgb(231, 51, 51); border-width: 1px; border-style: dashed;" class="login-box-body">
-						<h6 style="margin-top: 0px;">If the details show here don't match with the certificate in front of you please contact us immediately on </h6>
-						<h6 style="margin-bottom: 3px;"> <strong>+44 (0)1924 609250</strong> or <strong>info@gatehouseawards.org</strong> </h6>
-					</div>
-				</div>
+  function esc(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
 
-			</div><!-- /.container -->
+  async function run(){
+    if(!id){ setNotFound("Certificate Not Found"); return; }
 
-		</div><!-- /.lock-stage -->
-	</div><!-- /.lock-wrap -->
+    certIdLine.textContent = "Certificate ID: " + id;
 
-	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    try{
+      const res = await fetch(`${API_URL}?id=${encodeURIComponent(id)}`);
+      const data = await res.json();
 
-	<script>
-		// ===== Lock scaling script (added) =====
-		(function(){
-			const stage = document.getElementById("lockStage");
-			const BASE = 640;
+      if(!data || data.found === false){
+        setNotFound("Certificate Not Found");
+        return;
+      }
 
-			function vw(){
-				return (window.visualViewport && window.visualViewport.width) ? window.visualViewport.width : window.innerWidth;
-			}
-			function fit(){
-				const scale = Math.min(vw() / BASE, 1); // scale down only
-				stage.style.transform = "scale(" + scale + ")";
-			}
+      // expects keys: name, qualification, awardedDate
+      document.getElementById("v_name").innerHTML = esc(data.name);
+      document.getElementById("v_qualification").innerHTML = esc(data.qualification);
+      document.getElementById("v_date").innerHTML = esc(data.awardedDate);
 
-			window.addEventListener("resize", fit);
-			if (window.visualViewport) window.visualViewport.addEventListener("resize", fit);
-			fit();
-		})();
-	</script>
-
-	<!-- Keep your original scripts (unchanged) -->
-	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-	<script src="https://ark-gatehouseawards.org/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-	<script src="https://ark-gatehouseawards.org/plugins/bootstrap/js/bootstrap.min.js"></script>
-	<script src="https://ark-gatehouseawards.org/plugins/iCheck/icheck.min.js"></script>
-
-	<script>
-		$('#flash-overlay-modal').modal();
-		$(function () {
-			$('input').iCheck({
-				checkboxClass: 'icheckbox_square-blue',
-				radioClass: 'iradio_square-blue',
-				increaseArea: '20%'
-			});
-		});
-	</script>
+      title.textContent = "Certificate Found";
+      title.style.color = "rgb(0,166,90)";
+      greenBox.style.borderColor = "rgb(0,166,90)";
+      found.style.display = "block";
+      notfound.style.display = "none";
+    }catch(e){
+      setNotFound("Error Loading Certificate");
+    }
+  }
+  run();
+</script>
 </body>
 </html>
