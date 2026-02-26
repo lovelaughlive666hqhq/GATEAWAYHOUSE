@@ -178,59 +178,44 @@
 			});
 		</script>
 
-    <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
-  const id = new URLSearchParams(location.search).get("id");
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
+const id=new URLSearchParams(location.search).get("id");
 
-  const title = document.getElementById("title");
-  const found = document.getElementById("found");
-  const notfound = document.getElementById("notfound");
-  const certIdLine = document.getElementById("certIdLine");
-  const greenBox = document.getElementById("greenBox");
+const title=document.getElementById("title");
+const found=document.getElementById("found");
+const notfound=document.getElementById("notfound");
+const certIdLine=document.getElementById("certIdLine");
+const greenBox=document.getElementById("greenBox");
 
-  function setNotFound(msg){
-    title.textContent = msg;
-    title.style.color = "rgb(231,51,51)";
-    greenBox.style.borderColor = "rgb(231,51,51)";
-    found.style.display = "none";
-    notfound.style.display = "block";
-  }
+function setNotFound(msg){
+  title.textContent=msg;
+  title.style.color="rgb(231,51,51)";
+  greenBox.style.borderColor="rgb(231,51,51)";
+  found.style.display="none";notfound.style.display="block";
+}
 
-  function esc(s){
-    return String(s ?? "").replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));}
 
-  async function run(){
-    if(!id){ setNotFound("Certificate Not Found"); return; }
+(async ()=>{
+  if(!id){setNotFound("Certificate Not Found");return;}
+  certIdLine.textContent="Certificate ID: "+id;
 
-    certIdLine.textContent = "Certificate ID: " + id;
+  try{
+    const res=await fetch(`${API_URL}?id=${encodeURIComponent(id)}`);
+    const data=await res.json();
+    if(!data||data.status!=="found"){setNotFound("Certificate Not Found");return;}
 
-    try{
-      const res = await fetch(`${API_URL}?id=${encodeURIComponent(id)}`);
-      const data = await res.json();
+    document.getElementById("v_name").innerHTML        =esc(data.recipient);
+    document.getElementById("v_qualification").innerHTML=esc(data.qualification);
+    document.getElementById("v_date").innerHTML        =esc(data.award_date);
 
-      if(!data || data.found === false){
-        setNotFound("Certificate Not Found");
-        return;
-      }
-
-      // expects keys: name, qualification, awardedDate
-      document.getElementById("v_name").innerHTML = esc(data.name);
-      document.getElementById("v_qualification").innerHTML = esc(data.qualification);
-      document.getElementById("v_date").innerHTML = esc(data.awardedDate);
-
-      title.textContent = "Certificate Found";
-      title.style.color = "rgb(0,166,90)";
-      greenBox.style.borderColor = "rgb(0,166,90)";
-      found.style.display = "block";
-      notfound.style.display = "none";
-    }catch(e){
-      setNotFound("Error Loading Certificate");
-    }
-  }
-  run();
+    title.textContent="Certificate Found";
+    title.style.color="rgb(0,166,90)";
+    greenBox.style.borderColor="rgb(0,166,90)";
+    found.style.display="block";notfound.style.display="none";
+  }catch(e){setNotFound("Error Loading Certificate");}
+})();
 </script>
 </body>
 </html>
