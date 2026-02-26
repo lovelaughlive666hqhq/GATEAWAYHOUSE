@@ -1,120 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>QR Certificate Verification</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 0 16px;
-      background: #fff;
+    html, body { background: #fff; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 12px;
     }
-    .logo {
+
+    #logo {
       display: block;
-      margin: 0 auto 18px;
-      max-width: 220px;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 230px;
+      margin-top: 40px;
+      margin-bottom: 20px;
     }
-    h1 {
+
+    .login-logo {
       text-align: center;
-      font-weight: 700;
-      margin: 0 0 18px;
+      font-size: 30px;
+      margin-bottom: 15px;
+      font-weight: 300;
     }
+
+    .col {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
     .box {
-      border: 1px dashed #00a65a;
-      padding: 18px;
-      border-radius: 8px;
+      margin-bottom: 20px;
       text-align: center;
-      margin-bottom: 16px;
+      border-width: 1px;
+      border-style: dashed;
+      padding: 18px 12px;
+      box-sizing: border-box;
     }
-    .box.invalid {
-      border-color: #e73333;
-    }
-    .label {
+
+    .box.success { border-color: rgb(0, 166, 90); }
+    .box.danger  { border-color: rgb(231, 51, 51); }
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      font-size: 18px;
       font-weight: 700;
     }
+
+    h6 {
+      font-size: 14px;
+      font-weight: 300;
+      margin: 6px 0;
+    }
+
+    .green { color: rgb(0, 166, 90); }
+    .red   { color: rgb(231, 51, 51); }
+
     .small {
-      font-size: 13px;
+      font-size: 12px;
       color: #666;
       margin-top: 10px;
       word-break: break-word;
     }
   </style>
 </head>
+
 <body>
+  <div class="container">
 
-<!-- Optional: put your logo in repo root and reference it like this -->
-<img class="logo" src="../logo.png" alt="Logo" onerror="this.style.display='none'">
+    <!-- Put logo.png in repo root -->
+    <img src="../logo.png" id="logo" alt="GA_LOGO" onerror="this.style.display='none'">
 
-<h1>QR Certificate <b>Verification</b></h1>
+    <div class="col">
+      <div class="login-logo">
+        QR Certificate <b>Verification</b>
+      </div>
+    </div>
 
-<div id="statusBox" class="box">
-  <div id="statusTitle" style="font-weight:700;">Checking…</div>
-  <div id="details" style="margin-top:12px;"></div>
-  <div id="rawId" class="small"></div>
-</div>
+    <div class="col" style="margin-top:10px;">
+      <div id="foundBox" class="box success">
+        <h4 id="statusHeading" class="green">Checking…</h4>
 
-<div class="box invalid">
-  <div class="small" style="color:#333;">
-    If the details shown do not match the certificate in front of you, contact the issuer immediately.
+        <div id="detailsArea" style="display:none;">
+          <h6><strong>Recipient:</strong> <span id="recipient"></span></h6>
+
+          <h6><strong>Qualification Achieved:</strong></h6>
+          <h6 id="qualification"></h6>
+
+          <h6 style="margin-bottom: 3px;">
+            <strong>Award Date:</strong> <span id="awardDate"></span>
+          </h6>
+        </div>
+
+        <div id="notFoundArea" style="display:none;">
+          <h6>We could not locate a certificate matching this QR link.</h6>
+        </div>
+
+        <div id="certIdLine" class="small"></div>
+      </div>
+    </div>
+
+    <div class="col" style="margin-top:0px;">
+      <div class="box danger">
+        <h6 style="margin-top: 0px;">
+          If the details show here don't match with the certificate in front of you please contact us immediately on
+        </h6>
+        <h6 style="margin-bottom: 3px;">
+          <strong id="contactPhone"></strong> or <strong id="contactEmail"></strong>
+        </h6>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
+  <script>
+    // ✅ Your Apps Script Web App
+    const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+    // Change these to your real issuer contact details:
+    const CONTACT_PHONE = "+44 (0)0000 000000";
+    const CONTACT_EMAIL = "info@example.com";
 
-  const statusBox = document.getElementById("statusBox");
-  const statusTitle = document.getElementById("statusTitle");
-  const details = document.getElementById("details");
-  const rawId = document.getElementById("rawId");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
-  if (!id) {
-    statusBox.classList.add("invalid");
-    statusTitle.textContent = "No Certificate ID Provided";
-  } else {
-    rawId.textContent = "Certificate ID: " + id;
+    const foundBox = document.getElementById("foundBox");
+    const statusHeading = document.getElementById("statusHeading");
+    const detailsArea = document.getElementById("detailsArea");
+    const notFoundArea = document.getElementById("notFoundArea");
+    const certIdLine = document.getElementById("certIdLine");
 
-    fetch(`${API_URL}?id=${encodeURIComponent(id)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (!data.found) {
-          statusBox.classList.add("invalid");
-          statusTitle.textContent = "Certificate Not Found";
-          details.innerHTML = "";
-          return;
-        }
+    document.getElementById("contactPhone").textContent = CONTACT_PHONE;
+    document.getElementById("contactEmail").textContent = CONTACT_EMAIL;
 
-        const isValid = (String(data.status || "")).toLowerCase() === "valid";
+    if (!id) {
+      // No ID in URL
+      foundBox.classList.remove("success");
+      foundBox.classList.add("danger");
+      statusHeading.classList.remove("green");
+      statusHeading.classList.add("red");
+      statusHeading.textContent = "No Certificate ID Provided";
+      notFoundArea.style.display = "block";
+    } else {
+      certIdLine.textContent = "Certificate ID: " + id;
 
-        statusBox.classList.toggle("invalid", !isValid);
-        statusTitle.textContent = isValid ? "Certificate Found" : "Certificate Not Valid";
+      fetch(`${API_URL}?id=${encodeURIComponent(id)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data || data.found === false) {
+            // Not found state
+            foundBox.classList.remove("success");
+            foundBox.classList.add("danger");
+            statusHeading.classList.remove("green");
+            statusHeading.classList.add("red");
+            statusHeading.textContent = "Certificate Not Found";
+            notFoundArea.style.display = "block";
+            detailsArea.style.display = "none";
+            return;
+          }
 
-        details.innerHTML = `
-          <div><span class="label">Recipient:</span> ${escapeHtml(data.name || "")}</div>
-          <div style="margin-top:10px;"><span class="label">Qualification:</span></div>
-          <div>${escapeHtml(data.qualification || "")}</div>
-          <div style="margin-top:10px;"><span class="label">Award Date:</span> ${escapeHtml(data.awardedDate || "")}</div>
-          <div style="margin-top:10px;"><span class="label">Status:</span> ${escapeHtml(data.status || "")}</div>
-        `;
-      })
-      .catch(() => {
-        statusBox.classList.add("invalid");
-        statusTitle.textContent = "Error Fetching Verification Data";
-        details.innerHTML = "<div class='small'>Check Apps Script deployment access and URL.</div>";
-      });
-  }
+          // Found state — accept multiple possible field names just in case
+          const name = data.name || data.recipient || "";
+          const qualification = data.qualification || data.course || data.qualificationAchieved || "";
+          const awardDate = data.awardedDate || data.issueDate || data.date || "";
 
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-</script>
+          statusHeading.classList.remove("red");
+          statusHeading.classList.add("green");
+          statusHeading.textContent = "Certificate Found";
 
+          document.getElementById("recipient").textContent = name;
+          document.getElementById("qualification").textContent = qualification;
+          document.getElementById("awardDate").textContent = awardDate;
+
+          detailsArea.style.display = "block";
+          notFoundArea.style.display = "none";
+        })
+        .catch(() => {
+          foundBox.classList.remove("success");
+          foundBox.classList.add("danger");
+          statusHeading.classList.remove("green");
+          statusHeading.classList.add("red");
+          statusHeading.textContent = "Error Loading Verification";
+          notFoundArea.style.display = "block";
+          detailsArea.style.display = "none";
+        });
+    }
+  </script>
 </body>
 </html>
