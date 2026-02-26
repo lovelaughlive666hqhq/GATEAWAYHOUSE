@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gateway House - Admin Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 600px;
+      margin: 50px auto;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .success {
+      color: green;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .small {
+      color: #555;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+<h1 style="text-align:center;">Issue Qualification</h1>
+
+<input type="text" id="name" placeholder="Recipient Name">
+<input type="text" id="qualification" placeholder="Qualification">
+<input type="date" id="awardedDate">
+
+<button onclick="issueCertificate()">Generate QR</button>
+
+<p id="result" class="success"></p>
+<div id="qrcode"></div>
+<div id="verifyLink" class="small"></div>
+
+<script>
+  // IMPORTANT: Keep this EXACT (no extra headers) to avoid CORS preflight problems.
+  const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
+  const VERIFY_BASE_URL = "https://lovelaughlive666hqhq.github.io/GATEAWAYHOUSE/verify";
+
+  async function issueCertificate() {
+    const name = document.getElementById("name").value.trim();
+    const qualification = document.getElementById("qualification").value.trim();
+    const awardedDate = document.getElementById("awardedDate").value;
+
+    if (!name || !qualification || !awardedDate) {
+      alert("All fields required.");
+      return;
+    }
+
+    document.getElementById("result").innerText = "Issuing...";
+    document.getElementById("qrcode").innerHTML = "";
+    document.getElementById("verifyLink").innerText = "";
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ name, qualification, awardedDate })
+    });
+
+    const data = await response.json();
+
+    if (!data.success || !data.id) {
+      document.getElementById("result").innerText = "Failed to issue certificate.";
+      return;
+    }
+
+    const verifyUrl = `${VERIFY_BASE_URL}?id=${encodeURIComponent(data.id)}`;
+
+    document.getElementById("result").innerText = `Issued ID: ${data.id}`;
+    document.getElementById("qrcode").innerHTML = "";
+
+    new QRCode(document.getElementById("qrcode"), {
+      text: verifyUrl,
+      width: 220,
+      height: 220
+    });
+
+    document.getElementById("verifyLink").innerText = verifyUrl;
+  }
+</script>
+
+</body>
+</html>
