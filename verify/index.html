@@ -175,44 +175,51 @@
 		</script>
 
 <script>
+
 const API_URL="https://script.google.com/macros/s/AKfycbyXdlN9IkvKP9ND1P8CF7YhsbAZxOnxXmVuXJH_4FQBDIQ56opButLXm8FaiU7BscX1-g/exec";
 const id=new URLSearchParams(location.search).get("id");
 
 function esc(s){
-  return String(s??"").replace(/[&<>"']/g,m=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    "\"":"&quot;",
-    "'":"&#039;"
-  }[m]));
+return String(s??"").replace(/[&<>"']/g,m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+"\"":"&quot;",
+"'":"&#039;"
+}[m]));
 }
 
 (async ()=>{
-  if(!id){
-    document.getElementById("v_name").innerHTML="Not Found";
-    return;
-  }
 
-  try{
-    const res=await fetch(`${API_URL}?id=${encodeURIComponent(id)}`);
-    const data=await res.json();
+if(!id){
+document.getElementById("v_name").innerHTML="Certificate Not Found";
+document.getElementById("v_qualification").innerHTML="";
+document.getElementById("v_date").innerHTML="";
+return;
+}
 
-    if(!data || data.status!=="found"){
-      document.getElementById("v_name").innerHTML="Not Found";
-      document.getElementById("v_qualification").innerHTML="";
-      document.getElementById("v_date").innerHTML="";
-      return;
-    }
+try{
 
-    document.getElementById("v_name").innerHTML=esc(data.recipient);
-    document.getElementById("v_qualification").innerHTML=esc(data.qualification);
-    document.getElementById("v_date").innerHTML=esc(data.award_date);
+const res=await fetch(`${API_URL}?id=${encodeURIComponent(id)}`);
+const data=await res.json();
 
-  }catch(e){
-    document.getElementById("v_name").innerHTML="Error loading certificate";
-  }
+if(!data || data.status!=="found"){
+document.getElementById("v_name").innerHTML="Certificate Not Found";
+document.getElementById("v_qualification").innerHTML="";
+document.getElementById("v_date").innerHTML="";
+return;
+}
+
+document.getElementById("v_name").innerHTML=esc(data.recipient);
+document.getElementById("v_qualification").innerHTML=esc(data.qualification);
+document.getElementById("v_date").innerHTML=esc(data.award_date);
+
+}catch(e){
+document.getElementById("v_name").innerHTML="Error loading certificate";
+}
+
 })();
+
 </script>
 </body>
 </html>
