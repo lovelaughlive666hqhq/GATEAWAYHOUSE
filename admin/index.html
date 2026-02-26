@@ -1,109 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Gateway House - Admin Dashboard</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin | Issue Certificate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 3 (responsive like your original layout) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+
   <style>
-    body {
-      font-family: Arial;
-      max-width: 600px;
-      margin: 50px auto;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      box-sizing: border-box;
-    }
-
-    button {
-      background: black;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    #qrcode {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .success {
-      color: green;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .small {
-      color: #555;
-      font-size: 12px;
-      text-align: center;
-      margin-top: 10px;
-      word-break: break-all;
+    html, body { background:#fff; font-family: Roboto, Arial, sans-serif; }
+    #logo{ display:block; margin:30px auto 15px; max-width:230px; width:100%; height:auto; }
+    .login-logo{ text-align:center; font-size:30px; font-weight:300; margin-bottom:15px; }
+    .box{ background:#fff; padding:18px 15px; border:1px dashed #bbb; margin-bottom:20px; }
+    .btn-black{ background:#000; color:#fff; border:0; }
+    .btn-black:hover{ background:#111; color:#fff; }
+    #qrcode{ display:flex; justify-content:center; margin-top:15px; }
+    .small{ font-size:12px; color:#666; word-break:break-all; text-align:center; }
+    @media (max-width: 767px){
+      .container{ padding-left:12px; padding-right:12px; }
     }
   </style>
+
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
+
 <body>
+  <div class="container">
 
-<h1 style="text-align:center;">Issue Qualification</h1>
+    <div class="col-sm-6 col-sm-offset-3" style="margin-top: 10px;">
+      <!-- use your local repo logo in root -->
+      <img src="../logo.png" id="logo" alt="Logo" onerror="this.style.display='none'">
 
-<input type="text" id="name" placeholder="Recipient Name">
-<input type="text" id="qualification" placeholder="Qualification">
-<input type="date" id="awardedDate">
+      <div class="login-logo">Admin <b>Issuer</b></div>
+    </div>
 
-<button onclick="issueCertificate()">Generate QR</button>
+    <div class="col-sm-6 col-sm-offset-3">
+      <div class="box">
+        <div class="form-group">
+          <label>Recipient</label>
+          <input class="form-control" id="name" placeholder="Full name">
+        </div>
 
-<p id="result" class="success"></p>
-<div id="qrcode"></div>
-<div id="verifyLink" class="small"></div>
+        <div class="form-group">
+          <label>Qualification Achieved</label>
+          <input class="form-control" id="qualification" placeholder="Qualification / Course">
+        </div>
+
+        <div class="form-group">
+          <label>Award Date</label>
+          <input class="form-control" id="awardedDate" type="date">
+        </div>
+
+        <button class="btn btn-black btn-block" id="issueBtn" onclick="issue()">Issue + Generate QR</button>
+
+        <hr>
+
+        <div id="status" style="text-align:center; font-weight:700;"></div>
+        <div id="qrcode"></div>
+        <div class="small" id="verifyLink"></div>
+      </div>
+    </div>
+  </div>
 
 <script>
-  // IMPORTANT: Keep this EXACT (no extra headers) to avoid CORS preflight problems.
   const API_URL = "https://script.google.com/macros/s/AKfycbzvvu8IxsT2LkHas6g74GHj7Jl7WjXWUDhaQkwPqkrPl2br4BqsMrkH9Os0yj-4ltx0sw/exec";
   const VERIFY_BASE_URL = "https://lovelaughlive666hqhq.github.io/GATEAWAYHOUSE/verify";
 
-  async function issueCertificate() {
+  async function issue(){
     const name = document.getElementById("name").value.trim();
     const qualification = document.getElementById("qualification").value.trim();
     const awardedDate = document.getElementById("awardedDate").value;
 
-    if (!name || !qualification || !awardedDate) {
-      alert("All fields required.");
+    if(!name || !qualification || !awardedDate){
+      alert("Fill Recipient, Qualification, and Award Date.");
       return;
     }
 
-    document.getElementById("result").innerText = "Issuing...";
+    document.getElementById("issueBtn").disabled = true;
+    document.getElementById("status").textContent = "Issuing…";
     document.getElementById("qrcode").innerHTML = "";
-    document.getElementById("verifyLink").innerText = "";
+    document.getElementById("verifyLink").textContent = "";
 
-    const response = await fetch(API_URL, {
+    // IMPORTANT: keep it a “simple request” to avoid CORS preflight with Apps Script
+    // (don’t set Content-Type: application/json) :contentReference[oaicite:1]{index=1}
+    const res = await fetch(API_URL, {
       method: "POST",
       body: JSON.stringify({ name, qualification, awardedDate })
     });
 
-    const data = await response.json();
+    const data = await res.json().catch(() => ({}));
 
-    if (!data.success || !data.id) {
-      document.getElementById("result").innerText = "Failed to issue certificate.";
+    document.getElementById("issueBtn").disabled = false;
+
+    if(!data.success || !data.id){
+      document.getElementById("status").textContent = "Failed to issue.";
       return;
     }
 
-    const verifyUrl = `${VERIFY_BASE_URL}?id=${encodeURIComponent(data.id)}`;
-
-    document.getElementById("result").innerText = `Issued ID: ${data.id}`;
-    document.getElementById("qrcode").innerHTML = "";
+    const url = `${VERIFY_BASE_URL}?id=${encodeURIComponent(data.id)}`;
+    document.getElementById("status").textContent = `Issued: ${data.id}`;
 
     new QRCode(document.getElementById("qrcode"), {
-      text: verifyUrl,
+      text: url,
       width: 220,
       height: 220
     });
 
-    document.getElementById("verifyLink").innerText = verifyUrl;
+    document.getElementById("verifyLink").textContent = url;
   }
 </script>
-
 </body>
 </html>
